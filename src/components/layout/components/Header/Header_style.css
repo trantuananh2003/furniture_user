@@ -1,0 +1,88 @@
+/* 
+  primary color #37b24d
+  grey color #868e96
+*/
+
+.dropdown-menu-user {
+  display: block;
+  color: #c7cfc6;
+  z-index: 100;
+  width: 10rem;
+  background-color: #637062c2;
+  border-radius: 5px;
+
+  position: absolute;
+  right: 0;
+  transition: all 0.3s;
+
+  opacity: 0;
+  pointer-events: none;
+  margin: 0.5em;
+  visibility: hidden;
+}
+
+.open-menu-user {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+@media (max-width: 40em) {
+  .dropdown-menu-user {
+    color: #000000;
+    z-index: 100;
+    background-color: #ffffff;
+    border-radius: 10px;
+
+    position: fixed;
+    left: 0;
+    width: 100vw;
+    height: 80vh;
+    margin-top: 0.5rem;
+    transition: all 0.3s;
+
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    gap: 0.5rem;
+    font-weight: 600;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .open-menu-user {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+  }
+}
+
+.navigate-section-header {
+  background-color: #000000af;
+  margin: auto;
+  padding: 0.5rem;
+  width: max-content;
+  border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+  .navigate-section-header {
+    font-size: 0.9em;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navigate-section-header {
+    padding: 1.5rem;
+    border-radius: 5px; /* Tăng bo tròn cho phù hợp thẩm mỹ mobile */
+  }
+}
