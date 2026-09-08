@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Login from "./components/LoginPage";
-import SignUp from "./components/SignUpPage";
+import Login from "~/pages/Auth/LoginPage";
+import SignUp from "~/pages/Auth/SignUpPage";
 
 const Auth: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");

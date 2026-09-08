@@ -1,14 +1,19 @@
-import React, { memo } from "react";
+import { memo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-const PagingBar = ({ totalRecords, pageSize }) => {
+interface Props {
+  totalRecords: number;
+  pageSize: number;
+}
+
+const PagingBar = ({ totalRecords, pageSize }: Props) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const currentPage = parseInt(searchParams.get("pageCurrent") || "1", 10);
   const totalPages = Math.ceil(totalRecords / pageSize);
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       searchParams.delete("pageCurrent");
       searchParams.append("pageCurrent", page.toString());
@@ -25,7 +30,7 @@ const PagingBar = ({ totalRecords, pageSize }) => {
         className={`px-4 py-2 border rounded-lg ${
           currentPage === 1
             ? "bg-gray-300 cursor-not-allowed"
-            : "bg-orange-500 text-white hover:bg-red-400"
+            : "bg-orange-500 text-white cursor-pointer hover:bg-red-400"
         }`}
       >
         &lt;
@@ -39,7 +44,7 @@ const PagingBar = ({ totalRecords, pageSize }) => {
           className={`px-4 py-2 border rounded-lg ${
             page === currentPage
               ? "bg-orange-500 text-white"
-              : "bg-white hover:bg-gray-100"
+              : "bg-white hover:bg-gray-100 cursor-pointer"
           }`}
         >
           {page}
@@ -53,7 +58,7 @@ const PagingBar = ({ totalRecords, pageSize }) => {
         className={`px-4 py-2 border rounded-lg ${
           currentPage === totalPages
             ? "bg-gray-300 cursor-not-allowed"
-            : "bg-orange-500 text-white hover:bg-red-400"
+            : "bg-orange-500 text-white hover:bg-red-400 cursor-pointer"
         }`}
       >
         &gt;

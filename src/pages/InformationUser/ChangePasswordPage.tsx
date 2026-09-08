@@ -65,7 +65,7 @@ export default function ResetPasswordForm() {
 
       const response: ApiResponse = await clientAPI
         .service("auth/change-password")
-        .create(formDataObject);
+        .post(formDataObject);
 
       if (response.isSuccess) {
         setFormData({
@@ -87,7 +87,7 @@ export default function ResetPasswordForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-green-50 to-indigo-100 p-4">
       <div className="w-full max-w-md p-8 bg-white shadow-2xl rounded-2xl">
         <h2 className="text-2xl font-bold mb-6 text-center">Đổi mật khẩu</h2>
         <form onSubmit={handleSubmit}>

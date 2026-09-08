@@ -3,12 +3,11 @@ import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import clientAPI from "~/client-api/rest-client";
 import type ApiResponse from "~/model/ApiResponse";
-import { setUser } from "../../../redux/features/userSlice";
+import { setUser } from "~/redux/features/userSlice";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GoogleLogin } from "@react-oauth/google";
 
 const Login: React.FC = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
@@ -32,7 +31,8 @@ const Login: React.FC = () => {
       }
     } catch (error: any) {
       setErrAccount(
-        error?.response?.data?.errorMessages[0] || "Hệ thống từ chối"
+        error?.response?.data?.detail ||
+          "Sai thông tin tài khoản hoặc mật khẩu",
       );
     }
   };
@@ -41,9 +41,11 @@ const Login: React.FC = () => {
     try {
       const formData = new FormData();
       formData.append("TokenId", response?.credential);
+
       let data: ApiResponse = await clientAPI
         .service("auth/login-google")
-        .create(formData);
+        .post(formData);
+
       localStorage.setItem("userToken", data?.result?.token);
 
       dispatch(setUser(data.result));

@@ -10,20 +10,26 @@ import AddressUser from "../pages/InformationUser/FavoriteUser";
 import FilteredProduct from "../pages/FilteredProduct";
 import ForgotPasswordPage from "../pages/Auth/ForgotPasswordPage";
 import NonHeaderLayout from "~/components/layout/NonHeaderLayout";
-import PaymentSuccess from "../pages/Status/SuccessfulPay";
+import PaymentSuccessPage from "~/pages/PageStatus/SuccessfulPayPage";
 import ResetPassword from "../pages/Auth/ResetPasswordPage";
 import ResetPasswordForm from "../pages/InformationUser/ChangePasswordPage";
+import NotFoundPage from "~/pages/PageStatus/NotFoundPage";
 
 //Public
 const publicRoutes = [
   { path: "/", component: HomePage },
   {
-    path: "/collections/",
+    path: "/products/",
     component: FilteredProduct,
     Layout: DefaultLayout,
   },
   {
-    path: "/collections/:slug",
+    path: "/categories/:slug",
+    component: FilteredProduct,
+    Layout: DefaultLayout,
+  },
+  {
+    path: "/brands/:slug",
     component: FilteredProduct,
     Layout: DefaultLayout,
   },
@@ -49,7 +55,7 @@ const publicRoutes = [
   },
   {
     path: "/payment-successful",
-    component: PaymentSuccess,
+    component: PaymentSuccessPage,
     Layout: NonHeaderLayout,
   },
   {
@@ -57,6 +63,7 @@ const publicRoutes = [
     component: ResetPassword,
     Layout: NonHeaderLayout,
   },
+  { path: "*", component: NotFoundPage, Layout: NonHeaderLayout },
 ];
 
 export { publicRoutes };

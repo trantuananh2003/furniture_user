@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import ItemCheckOut from "./ItemCheckOut";
-import type { CartResponse } from "~/model/CartResponse";
+import { useDispatch, useSelector } from "react-redux";
+import type { CartItemResponse } from "~/model/CartResponse";
+import type { RootState } from "~/redux/store";
 import clientAPI from "~/client-api/rest-client";
 import type ApiResponse from "~/model/ApiResponse";
+import { setCart } from "~/redux/features/cartSlice";
 
 interface ShippingFeeResponse {
   total: number;
@@ -26,25 +28,53 @@ interface CalculatorPrice {
   total: number;
 }
 
+interface ItemProps {
+  itemCart: CartItemResponse;
+}
+
+const ItemCheckOut = ({ itemCart }: ItemProps) => (
+  <div className="flex items-center gap-4">
+    <div className="w-16 h-16 bg-gray-100 mr-4 shrink-0">
+      <img
+        src={itemCart.imageUrl || "https://placehold.co/600x400"}
+        alt={itemCart.imageUrl}
+        className="w-full h-full object-cover rounded-sm"
+      />
+    </div>
+    <div className="grow">
+      <h2 className="text-sm font-medium">{itemCart.nameOption}</h2>
+      <h2 className="text-[0.8rem] text-gray-400 font-medium">
+        x{itemCart.quantity}
+      </h2>
+    </div>
+    <div className="text-right">
+      <p className="font-medium text-orange-500 text-lg">
+        {itemCart.salePrice.toLocaleString("vi-VN")}₫
+      </p>
+      <p className="font-medium text-sm line-through">
+        {itemCart.price.toLocaleString("vi-VN")}₫
+      </p>
+    </div>
+  </div>
+);
+
 const CheckOutBill = () => {
+  const dispatch = useDispatch();
   const [feeShipping, setFeeShipping] = useState<ShippingFeeResponse>();
-  const [cartData, setCartData] = useState<CartResponse>();
   const [calPrice, setCalPrice] = useState<CalculatorPrice>();
+  const cartData = useSelector((state: RootState) => state.carts);
 
   useEffect(() => {
     const loadCart = async () => {
       try {
-        const response: ApiResponse = await clientAPI.service(`carts`).find();
-        setCartData((prev) => ({
-          ...prev,
-          ...response?.result,
-        }));
+        const response: ApiResponse = await clientAPI.service("carts").find();
+        dispatch(setCart(response.result));
       } catch (error) {
         console.error("Error loading cart:", error);
       }
     };
     loadCart();
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!cartData) return;
@@ -53,7 +83,7 @@ const CheckOutBill = () => {
     const subtotal = items.reduce((t, i) => t + i.salePrice * i.quantity, 0);
     const discount = items.reduce(
       (t, i) => t + (i.price - i.salePrice) * i.quantity,
-      0
+      0,
     );
 
     setCalPrice({

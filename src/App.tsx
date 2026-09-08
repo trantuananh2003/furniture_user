@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { publicRoutes } from "./routes/index";
 import { setUser } from "./redux/features/userSlice";
 import { jwtDecode } from "jwt-decode";
@@ -19,32 +19,28 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <div>
-        <Routes>
-          {publicRoutes.map((route, index) => {
-            const Page = route.component;
-            const Layout = route.Layout ?? DefaultLayout; // Nếu null => dùng Fragment
+    <Routes>
+      {publicRoutes.map((route, index) => {
+        const Page = route.component;
+        const Layout = route.Layout ?? DefaultLayout; // Nếu null => dùng Fragment
 
-            return (
-              <Route
-                key={index}
-                path={route.path}
-                element={
-                  route.Layout === null ? (
-                    <Page />
-                  ) : (
-                    <Layout>
-                      <Page />
-                    </Layout>
-                  )
-                }
-              />
-            );
-          })}
-        </Routes>
-      </div>
-    </Router>
+        return (
+          <Route
+            key={index}
+            path={route.path}
+            element={
+              route.Layout === null ? (
+                <Page />
+              ) : (
+                <Layout>
+                  <Page />
+                </Layout>
+              )
+            }
+          />
+        );
+      })}
+    </Routes>
   );
 }
 

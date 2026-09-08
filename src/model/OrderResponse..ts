@@ -5,7 +5,9 @@ export interface OrderResponse {
   paymentStatus: string;
   shippingAddress: string;
   orderStatus: string;
+  createdAt: Date;
   orderPaidTime: Date;
+  paymentMethod: string;
 }
 
 export interface OrderItemResponse {

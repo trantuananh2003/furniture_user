@@ -3,7 +3,7 @@ import clientAPI from "~/client-api/rest-client";
 import type ApiResponse from "~/model/ApiResponse";
 import type CategoriesResponse from "../../../../model/CategoriesResponse";
 import { memo, useEffect, useState } from "react";
-import NavItem from "./components/CategoriesNav";
+import NavItem from "./components/NavItem";
 import type BrandsResponse from "../../../../model/BrandsResponse";
 
 export interface SaleProgram {
@@ -16,7 +16,7 @@ export interface SaleProgram {
 
 function Navigation() {
   const [dataCategories, setDataCategories] = useState<CategoriesResponse[]>(
-    []
+    [],
   );
   const [dataBrands, setDataBrands] = useState<BrandsResponse[]>([]);
   const [salePrograms, setSalePrograms] = useState<SaleProgram[]>([]);
@@ -100,7 +100,10 @@ function Navigation() {
       {/*Dynamic*/}
       <ul className="flex space-x-8">
         {menuItems.map((item) => (
-          <li key={item.label} className="relative group background">
+          <li
+            key={item.label}
+            className="relative group background hover:cursor-default"
+          >
             <div className="text-[#d7f0db] hover:text-[#87d194] flex items-center">
               {item.label}
               {item.hasDropdown && <div></div>}
@@ -114,15 +117,21 @@ function Navigation() {
                   <ul className="p-2 space-y-1">
                     {item.href === "/categories" && (
                       <NavItem
+                        href={item.href}
                         items={dataCategories}
                         setState={setDataCategories}
                       />
                     )}
                     {item.href === "/brands" && (
-                      <NavItem items={dataBrands} setState={setDataBrands} />
+                      <NavItem
+                        href={item.href}
+                        items={dataBrands}
+                        setState={setDataBrands}
+                      />
                     )}
                     {item.href === "/saleprograms" && (
                       <NavItem
+                        href={item.href}
                         items={salePrograms}
                         setState={setSalePrograms}
                       />

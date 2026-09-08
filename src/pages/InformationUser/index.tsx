@@ -5,11 +5,9 @@ import type User from "~/model/User";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../redux/store";
 
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import EmailIcon from "@mui/icons-material/Email";
-import PhoneIcon from "@mui/icons-material/Phone";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import WcIcon from "@mui/icons-material/Wc";
+import { FaUser, FaPhone, FaCalendarAlt } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
+import { IoMaleFemale } from "react-icons/io5";
 
 interface Province {
   code: string;
@@ -38,6 +36,7 @@ function InformationUserPage() {
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
+
   // 🔵 Load user
   const loadInfoUser = async () => {
     try {
@@ -72,34 +71,32 @@ function InformationUserPage() {
     formData.append("shippingAddress", address);
     formData.append(
       "province",
-      provinces.find((p) => p.code === selectedProvince)?.name || ""
+      provinces.find((p) => p.code === selectedProvince)?.name || "",
     );
     formData.append(
       "district",
-      districts.find((d) => d.code === selectedDistrict)?.name || ""
+      districts.find((d) => d.code === selectedDistrict)?.name || "",
     );
     formData.append(
       "ward",
-      wards.find((w) => w.code === selectedWard)?.name || ""
+      wards.find((w) => w.code === selectedWard)?.name || "",
     );
 
     const response: ApiResponse = await clientAPI
       .service("users")
       .put(userData.user_id, formData);
-
     if (response.isSuccess) {
-      setUserInfo(response.result);
       setIsEditing(false);
     }
   };
 
   useEffect(() => {
     if (userData) loadInfoUser();
-  }, [userData]);
+  }, [userData, isEditing]);
 
   // Change input
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setUserInfo((prev) => (prev ? { ...prev, [name]: value } : prev));
@@ -113,19 +110,19 @@ function InformationUserPage() {
   );
 
   return (
-    <div className="min-h-screen bg-blue-100 py-12 px-4 flex items-center justify-center">
+    <div className="min-h-screen bg-green-50 py-12 px-4 flex items-center justify-center">
       <div className="bg-white shadow-xl rounded-2xl p-8 max-w-3xl w-full">
         <h2 className="text-3xl font-bold text-center text-blue-700 mb-8">
           Thông tin cá nhân & Địa chỉ nhận hàng
         </h2>
 
         {userInfo ? (
-          <>
+          <div>
             {/* THÔNG TIN CÁ NHÂN */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Họ tên */}
+{/* Họ tên */}
               <div>
-                <Label icon={<AccountCircleIcon />} text="Họ và tên" />
+                <Label icon={<FaUser className="text-base" />} text="Họ và tên" />
                 {isEditing ? (
                   <input
                     name="fullName"
@@ -140,7 +137,7 @@ function InformationUserPage() {
 
               {/* Email */}
               <div>
-                <Label icon={<EmailIcon />} text="Email" />
+                <Label icon={<MdEmail className="text-base" />} text="Email" />
                 <input
                   value={userInfo.email}
                   disabled
@@ -150,7 +147,7 @@ function InformationUserPage() {
 
               {/* Ngày sinh */}
               <div>
-                <Label icon={<CalendarMonthIcon />} text="Ngày sinh" />
+                <Label icon={<FaCalendarAlt className="text-base" />} text="Ngày sinh" />
                 {isEditing ? (
                   <input
                     type="date"
@@ -172,9 +169,9 @@ function InformationUserPage() {
                 )}
               </div>
 
-              {/* Giới tính */}
+{/* Giới tính */}
               <div>
-                <Label icon={<WcIcon />} text="Giới tính" />
+                <Label icon={<IoMaleFemale className="text-base" />} text="Giới tính" />
                 {isEditing ? (
                   <select
                     name="isMale"
@@ -190,9 +187,9 @@ function InformationUserPage() {
                 )}
               </div>
 
-              {/* Số điện thoại */}
+{/* Số điện thoại */}
               <div>
-                <Label icon={<PhoneIcon />} text="Số điện thoại" />
+                <Label icon={<FaPhone className="text-base" />} text="Số điện thoại" />
                 {isEditing ? (
                   <input
                     type="text"
@@ -208,67 +205,68 @@ function InformationUserPage() {
             </div>
 
             {/* ĐỊA CHỈ */}
-            <hr className="my-8" />
-            <h3 className="text-xl font-semibold text-blue-700 mb-4">
-              Địa chỉ nhận hàng
-            </h3>
+            <div>
+              <hr className="my-8" />
+              <h3 className="text-xl font-semibold text-blue-700 mb-4">
+                Địa chỉ nhận hàng
+              </h3>
+              {isEditing ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Tỉnh */}
+                  <select
+                    value={selectedProvince || ""}
+                    onChange={(e) => setSelectedProvince(e.target.value)}
+                    className="input border rounded-lg px-3 py-2"
+                  >
+                    <option value="">-- Chọn Tỉnh --</option>
+                    {provinces.map((p) => (
+                      <option key={p.code} value={p.code}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
 
-            {isEditing ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Tỉnh */}
-                <select
-                  value={selectedProvince || ""}
-                  onChange={(e) => setSelectedProvince(e.target.value)}
-                  className="input border rounded-lg px-3 py-2"
-                >
-                  <option value="">-- Chọn Tỉnh --</option>
-                  {provinces.map((p) => (
-                    <option key={p.code} value={p.code}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+                  {/* Huyện */}
+                  <select
+                    value={selectedDistrict || ""}
+                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                    className="input border rounded-lg px-3 py-2"
+                  >
+                    <option value="">-- Chọn Huyện --</option>
+                    {districts.map((d) => (
+                      <option key={d.code} value={d.code}>
+                        {d.name}
+                      </option>
+                    ))}
+                  </select>
 
-                {/* Huyện */}
-                <select
-                  value={selectedDistrict || ""}
-                  onChange={(e) => setSelectedDistrict(e.target.value)}
-                  className="input border rounded-lg px-3 py-2"
-                >
-                  <option value="">-- Chọn Huyện --</option>
-                  {districts.map((d) => (
-                    <option key={d.code} value={d.code}>
-                      {d.name}
-                    </option>
-                  ))}
-                </select>
+                  {/* Xã */}
+                  <select
+                    value={selectedWard || ""}
+                    onChange={(e) => setSelectedWard(e.target.value)}
+                    className="input border rounded-lg px-3 py-2"
+                  >
+                    <option value="">-- Chọn Xã --</option>
+                    {wards.map((w) => (
+                      <option key={w.code} value={w.code}>
+                        {w.name}
+                      </option>
+                    ))}
+                  </select>
 
-                {/* Xã */}
-                <select
-                  value={selectedWard || ""}
-                  onChange={(e) => setSelectedWard(e.target.value)}
-                  className="input border rounded-lg px-3 py-2"
-                >
-                  <option value="">-- Chọn Xã --</option>
-                  {wards.map((w) => (
-                    <option key={w.code} value={w.code}>
-                      {w.name}
-                    </option>
-                  ))}
-                </select>
-
-                {/* Địa chỉ chi tiết */}
-                <textarea
-                  rows={3}
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Số nhà, đường..."
-                  className="col-span-3 border rounded-lg px-3 py-2"
-                />
-              </div>
-            ) : (
-              <p className="text-gray-800">{userInfo.address}</p>
-            )}
+                  {/* Địa chỉ chi tiết */}
+                  <textarea
+                    rows={3}
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Số nhà, đường..."
+                    className="col-span-3 border rounded-lg px-3 py-2"
+                  />
+                </div>
+              ) : (
+                <p className="text-gray-800">{userInfo.address}</p>
+              )}
+            </div>
 
             {/* NÚT */}
             <div className="flex justify-end gap-4 mt-6">
@@ -276,13 +274,13 @@ function InformationUserPage() {
                 <>
                   <button
                     onClick={updateInfoUser}
-                    className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg shadow"
+                    className="bg-green-500 hover:bg-green-600 text-white  px-5 py-2 rounded-lg shadow hover:cursor-pointer"
                   >
                     Lưu thông tin
                   </button>
                   <button
                     onClick={() => setIsEditing(false)}
-                    className="bg-gray-400 hover:bg-gray-500 text-white px-5 py-2 rounded-lg shadow"
+                    className="bg-gray-400 hover:bg-gray-500 text-white px-5 py-2 rounded-lg shadow hover:cursor-pointer"
                   >
                     Hủy
                   </button>
@@ -290,13 +288,13 @@ function InformationUserPage() {
               ) : (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow"
+                  className="bg-blue-400 hover:bg-blue-500 hover:cursor-pointer text-white px-5 py-2 rounded-lg shadow"
                 >
                   Chỉnh sửa
                 </button>
               )}
             </div>
-          </>
+          </div>
         ) : (
           <p>Đang tải thông tin...</p>
         )}

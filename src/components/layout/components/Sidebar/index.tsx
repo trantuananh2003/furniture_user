@@ -16,8 +16,9 @@ function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 z-40 h-screen w-64 bg-white border-t-2 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
-          } lg:translate-x-0 lg:static`}
+        className={`fixed top-0 left-0 z-40 h-screen w-64 bg-white transform transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 lg:static`}
       >
         <div className="p-4">
           <h2 className="text-lg font-bold">Thông tin cá nhân</h2>

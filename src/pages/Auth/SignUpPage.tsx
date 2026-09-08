@@ -34,7 +34,7 @@ const SignUp: React.FC = () => {
 
     if (!passwordRegex.test(password)) {
       setErrPassword(
-        "Mật khẩu phải từ 8 ký tự, có chữ hoa, chữ thường và ký tự đặc biệt!"
+        "Mật khẩu phải từ 8 ký tự, có chữ hoa, chữ thường và ký tự đặc biệt!",
       );
       return;
     }
@@ -53,7 +53,7 @@ const SignUp: React.FC = () => {
 
       let data: ApiResponse = await clientAPI
         .service("auth/register")
-        .create(formData);
+        .post(formData);
 
       toast.success("Đăng ký thành công!");
       window.location.reload();

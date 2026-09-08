@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import clientAPI from "~/client-api/rest-client";
 import type ApiResponse from "~/model/ApiResponse";
 import { toast } from "react-toastify";
+import { FaStar } from "react-icons/fa";
 
 interface ReviewDialogProps {
   productId: string;
@@ -18,16 +19,12 @@ const Star = ({
   filled: boolean;
   onClick: () => void;
 }) => (
-  <svg
+  <FaStar
     onClick={onClick}
     className={`w-8 h-8 cursor-pointer ${
       filled ? "text-yellow-400" : "text-gray-300"
     }`}
-    fill="currentColor"
-    viewBox="0 0 20 20"
-  >
-    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.975a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.388 2.455a1 1 0 00-.364 1.118l1.286 3.974c.3.92-.755 1.688-1.54 1.118l-3.388-2.455a1 1 0 00-1.176 0l-3.388 2.455c-.784.57-1.838-.197-1.54-1.118l1.286-3.974a1 1 0 00-.364-1.118L2.037 9.402c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.975z" />
-  </svg>
+  />
 );
 
 const ReviewDialog: React.FC<ReviewDialogProps> = ({
@@ -55,9 +52,7 @@ const ReviewDialog: React.FC<ReviewDialogProps> = ({
       formData.append("Rate", rate.toString());
       formData.append("orderItemId", orderItemId);
 
-      var data: ApiResponse = await clientAPI
-        .service("reviews")
-        .create(formData);
+      var data: ApiResponse = await clientAPI.service("reviews").post(formData);
 
       toast.success("Đánh giá thành công");
       onSuccess();

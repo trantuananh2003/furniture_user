@@ -24,20 +24,6 @@ export interface Brand {
   name: string;
 }
 
-// export interface ProductItemResponse {
-//   id: string;
-//   nameOption: string;
-//   sku: string;
-//   imageUrl: string;
-//   modelUrl: string;
-//   lengthSize: number;
-//   widthSize: number;
-//   heightSize: number;
-//   weight: number;
-//   saleProgram: SaleProgram;
-//   soldQuantity: number;
-// }
-
 export interface SaleProgram {
   id: string;
   name: string;

@@ -61,7 +61,7 @@ const OrderPage = () => {
           Swal.fire(
             "Lỗi!",
             "Không thể hủy đơn hàng. Vui lòng thử lại.",
-            "error"
+            "error",
           );
         }
       } catch (error) {
@@ -81,7 +81,7 @@ const OrderPage = () => {
           <strong>Đơn vị vận chuyển:</strong> {data.result?.transferService}{" "}
           <br />
           <strong>Mã vận đơn:</strong> {data.result?.addressCode}
-        </div>
+        </div>,
       );
     } catch (e) {
       toast.warn("Không có thông tin");
@@ -89,7 +89,7 @@ const OrderPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-100 to-indigo-200 p-4">
+    <div className="min-h-screen bg-linear-to-br from-green-50 to-indigo-100 p-4">
       <div className="bg-white  shadow-md rounded-md">
         {/* Tabs */}
         <div className="flex border-b">
@@ -149,9 +149,9 @@ const OrderPage = () => {
                     <span className="text-gray-700 text-sm">
                       Ngày đặt hàng:&nbsp;
                     </span>
-                    <div className="text-black underline">
-                      {order?.orderPaidTime
-                        ? format(new Date(order?.orderPaidTime), "dd/MM/yyyy")
+                    <div className="text-black">
+                      {order?.createdAt
+                        ? format(new Date(order?.createdAt), "dd/MM/yyyy")
                         : "Chưa có thông tin"}
                     </div>
                   </div>
@@ -164,7 +164,7 @@ const OrderPage = () => {
                     >
                       <img
                         src={
-                          orderItem.imageItemUrl ||
+                          orderItem.imageItemUrl ??
                           "https://placehold.co/600x400"
                         }
                         className="w-16 h-16 m-2 object-cover rounded-md"
@@ -202,11 +202,13 @@ const OrderPage = () => {
                     </div>
                   ))}
                   <div className="flex flex-row justify-between">
-                    <div>
+                    <div className="flex flex-col">
                       <span className="text-lg text-black font-bold">
-                        Địa chỉ nhận hàng:{" "}
+                        Địa chỉ nhận hàng: {order.shippingAddress}
                       </span>
-                      {order.shippingAddress}
+                      <span className="text-lg text-black">
+                        Hình thức thanh toán: {order.paymentMethod}
+                      </span>
                     </div>
                     <div>
                       <span className="text-sm text-black">Thành tiền: </span>

@@ -30,7 +30,7 @@ const SectionCategories = () => {
   }, []);
 
   const navigateToFilterPage = (path: string) => {
-    window.location.href = `/collections/${path}`;
+    window.location.href = `/categories/${path}`;
   };
 
   return categories.length > 0 ? (

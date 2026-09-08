@@ -1,76 +1,109 @@
-.combobox-input-container {
+.multicombo-container {
   position: relative;
-  width: 10em;
+  width: 11em;
 }
 
-.combobox-title {
+.multicombo-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   text-transform: uppercase;
   font-weight: 500;
-  color: #585858;
-  border: solid 1px #8584848a;
+  color: #333;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
   width: 100%;
-  font-size: 0.6em;
-  padding: 0.3em;
-  padding-left: 1em;
+  font-size: 0.65rem;
+  padding: 0.5em 0.8em;
 
   cursor: pointer;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.combobox-title:hover {
-  cursor: pointer;
+.multicombo-title:hover {
+  border-color: #9ca3af;
 }
 
-.combobox-input-content {
+.multicombo-title svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s;
+}
+
+.multicombo-content {
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-  padding: 0.3em;
-  width: 100%;
-  border: solid 1px #8584848a;
+  top: calc(100% + 4px);
+  left: 0;
 
-  background: #ffffff;
-  z-index: 40;
+  padding: 6px;
+  width: 100%;
+  font-weight: 400;
+
+  z-index: 50;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
-
-  transition: all 0.5s;
+  transform: translateY(-4px);
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
 }
 
-.open-combobox-input-box {
+.open-multicombo-content {
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
+  transform: translateY(0);
 }
 
-.combobox-input {
+.multicombo-field {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.3em;
+  gap: 6px;
+  padding: 5px 6px;
+  font-size: 0.7rem;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
 
-  text-transform: uppercase;
-  font-weight: 300;
-  border: solid 1px #8584848a;
+.multicombo-field:hover {
+  background: #f3f4f6;
+}
+
+.multicombo-field label {
+  font-weight: 500;
+  color: #555;
+  white-space: nowrap;
+  min-width: 2.2em;
+}
+
+.multicombo-field input {
   width: 100%;
-  font-size: 0.4em;
-  padding: 0.5em;
-
-  position: relative;
+  min-width: 0;
+  padding: 3px 5px;
+  font-size: 0.7rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 5px;
+  background: #fafafa;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
 }
 
-.combobox-input-name {
-  width: max-content;
-  min-width: 2em;
+.multicombo-field input:focus {
+  border-color: #3b82f6;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
 }
 
-.combobox-input-field {
-  width: max-content;
-  padding: 0.2em;
+.multicombo-field .unit {
+  font-size: 0.6rem;
+  color: #999;
+  white-space: nowrap;
+  min-width: 1.5em;
+  text-align: right;
 }

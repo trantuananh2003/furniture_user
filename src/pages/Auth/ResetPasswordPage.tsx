@@ -44,7 +44,7 @@ function ResetPassword() {
       // Gửi FormData qua clientAPI
       const response: ApiResponse = await clientAPI
         .service("auth/reset-password")
-        .create(formData);
+        .post(formData);
 
       setLoading(false);
 

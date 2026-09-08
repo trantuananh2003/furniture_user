@@ -1,27 +1,15 @@
 import type User from "../../model/User";
 import type { RootState } from "../../redux/store";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { FaCheckCircle } from "react-icons/fa";
 
-const PaymentSuccess = () => {
+export default function PaymentSuccessPage() {
   const userData: User = useSelector((state: RootState) => state.users);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
       <div className="bg-white p-8 rounded-2xl shadow-lg text-center max-w-lg">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="size-20 text-green-600 mx-auto"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
+        <FaCheckCircle className="size-20 text-green-600 mx-auto" />
         <h1 className="text-2xl font-bold mt-4 text-gray-800">
           Thanh toán thành công!
         </h1>
@@ -43,6 +31,4 @@ const PaymentSuccess = () => {
       </div>
     </div>
   );
-};
-
-export default PaymentSuccess;
+}

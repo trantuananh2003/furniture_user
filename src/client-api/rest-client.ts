@@ -1,22 +1,26 @@
 import axios from "axios";
-import type { AxiosInstance } from 'axios'
+import type { AxiosInstance } from "axios";
 import { toast } from "react-toastify";
 import type ApiResponse from "~/model/ApiResponse";
+
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    skipGlobalErrorHandler?: boolean;
+  }
+}
 
 class RestClient {
   private axiosInstance: AxiosInstance;
   private path: string = "";
-  private authToken: string | null = null;
 
-  constructor() {
+  constructor(baseURL: string) {
     this.axiosInstance = axios.create({
+      baseURL,
       timeout: 100000,
       withCredentials: true,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
     });
+
+    this.applyInterceptors();
   }
 
   private applyInterceptors(): void {
@@ -27,80 +31,56 @@ class RestClient {
       }
       return config;
     });
+
     this.axiosInstance.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (error.response) {
-          switch (error.response.status) {
-            case 401:
-              toast.warning(error.response?.data || "Vui lòng đăng nhập!");
-              if (window.location.pathname !== "/auth") {
-                setTimeout(() => {
-                  window.location.href = "/auth";
-                }, 2000);
-              }
-              break;
-            case 403:
-              toast.warning("Bạn không có quyền!");
-              break;
-            case 400:
-              toast.warning(
-                error.response?.data?.errorMessages?.[0] || "Hệ thống từ chối!"
-              );
-              break;
-            case 500:
-              const errorMessage =
-                error.response?.data?.errorMessages?.[0] ?? "Đã xảy ra lỗi";
-              toast.error(errorMessage);
-              break;
-            default:
-              toast.error(`Lỗi xảy ra: ${error.response.status}`);
-              break;
-          }
-        } else {
-          // Khi error.response không có (network error...)
-          toast.error(error.message || "Đã xảy ra lỗi không xác định!");
+        const status = error.response?.status;
+
+        switch (status) {
+          case 401:
+            // token hết hạn
+            // refresh token hoặc logout
+            break;
+
+          case 403:
+            toast.error("Bạn không có quyền thực hiện thao tác này");
+            break;
+
+          case 500:
+          case 502:
+          case 503:
+            toast.error("Hệ thống đang gặp sự cố, vui lòng thử lại");
+            break;
+
+          default:
+            break;
         }
-
         return Promise.reject(error);
-      }
+      },
     );
-  }
-
-  // Cấu hình lại baseURL và headers
-  config(baseURL: string, headers: Record<string, string> = {}): this {
-    this.axiosInstance = axios.create({
-      baseURL,
-      timeout: 100000,
-      withCredentials: true,
-      headers,
-    });
-
-    this.applyInterceptors();
-
-    return this;
   }
 
   // Thiết lập đường dẫn dịch vụ
   service(path: string): this {
     this.path = path;
-
     return this;
   }
 
   // Xác thực tài khoản
-  async authentication(email: string, password: string): Promise<any> {
+  async authentication(email: string, password: string): Promise<ApiResponse> {
     try {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append("email", email);
       formData.append("password", password);
 
-      const response = await this.axiosInstance.post(`/${this.path}`, formData);
-      if (response.data.result.token) {
-        this.authToken = response.data.result.token;
-        if (this.authToken) {
-          localStorage.setItem("userToken", this.authToken);
-        }
+      const response = await this.axiosInstance.post<ApiResponse>(
+        `/${this.path}`,
+        formData,
+      );
+
+      if (response.data?.result?.token) {
+        localStorage.setItem("userToken", response.data.result.token);
       }
 
       return response.data;
@@ -111,19 +91,9 @@ class RestClient {
   }
 
   // Tạo mới dữ liệu
-  async create<T>(data: any): Promise<T> {
+  async post<T>(data: any): Promise<T> {
     try {
-      const isFormData = data instanceof FormData;
-      const authToken = localStorage.getItem("userToken");
-      const response = await this.axiosInstance.post<T>(`/${this.path}`, data, {
-        headers: {
-          "Content-Type": isFormData
-            ? "multipart/form-data"
-            : "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-
+      const response = await this.axiosInstance.post<T>(`/${this.path}`, data);
       return response.data;
     } catch (error) {
       console.error("Error creating data", error);
@@ -131,36 +101,18 @@ class RestClient {
     }
   }
 
-  // Lấy dữ liệu theo ID
-  async getObjectById<T>(objectId: string): Promise<T> {
-    try {
-      const response = await this.axiosInstance.get<T>(
-        `/${this.path}/${objectId}`
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching data by ID", error);
-      throw error;
-    }
-  }
-
   // Tìm kiếm dữ liệu với query
-  async find<T>(query: string = ""): Promise<ApiResponse> {
+  async find(query: string = ""): Promise<ApiResponse> {
     try {
       const url = query ? `/${this.path}?${query}` : `/${this.path}`;
+      const response = await this.axiosInstance.get<ApiResponse>(url);
 
-      const response = await this.axiosInstance.get<ApiResponse>(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-        },
-      });
-
-      let result: ApiResponse = response.data;
-      //Phan trang
-      if (response.headers["x-pagination"])
+      const result: ApiResponse = response.data;
+      if (response.headers["x-pagination"]) {
         result.paginationDto = JSON.parse(response.headers["x-pagination"]);
+      }
 
-      return result
+      return result;
     } catch (error: any) {
       if (!error.response) {
         console.error("Network error", error);
@@ -170,21 +122,12 @@ class RestClient {
     }
   }
 
-  // Cập nhập
+  // Cập nhật từng thuộc tính
   async patchEachProperty<T>(objectId: string, data?: any): Promise<T> {
     try {
-      const isFormData = data instanceof FormData;
       const response = await this.axiosInstance.patch<T>(
         `/${this.path}/${objectId}`,
         data,
-        {
-          headers: {
-            "Content-Type": isFormData
-              ? "multipart/form-data"
-              : "application/json",
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
-        }
       );
       return response.data;
     } catch (error) {
@@ -193,18 +136,11 @@ class RestClient {
     }
   }
 
+  // Cập nhật toàn bộ
   async put<T>(objectId: string | null, data: any): Promise<T> {
     try {
-      const isFormData = data instanceof FormData;
-      // Tạo URL, nếu objectId null thì bỏ qua
       const url = objectId ? `/${this.path}/${objectId}` : `/${this.path}`;
-      const response = await this.axiosInstance.put<T>(url, data, {
-        headers: {
-          "Content-Type": isFormData ? "multipart/form-data" : "application/json",
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-        },
-      });
-
+      const response = await this.axiosInstance.put<T>(url, data);
       return response.data;
     } catch (error) {
       console.error("Error updating data", error);
@@ -212,47 +148,17 @@ class RestClient {
     }
   }
 
-  // Tạo mới
-  async post<T>(objectId: string, data: any): Promise<T> {
+  async delete<T>(objectId: string | null): Promise<T> {
     try {
-      const isFormData = data instanceof FormData;
-      const response = await this.axiosInstance.put<T>(
-        `/${this.path}/${objectId}`,
-        data,
-        {
-          headers: {
-            "Content-Type": isFormData
-              ? "multipart/form-data"
-              : "application/json",
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
-        }
-      );
+      const url = objectId ? `/${this.path}/${objectId}` : `/${this.path}`;
+      const response = await this.axiosInstance.delete<T>(url);
       return response.data;
     } catch (error) {
       console.error("Error updating data", error);
-      throw error;
-    }
-  }
-
-  // Xóa dữ liệu theo ID
-  async delete<T>(objectId: string): Promise<T> {
-    try {
-      const response = await this.axiosInstance.delete<T>(
-        `/${this.path}/${objectId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error deleting data", error);
       throw error;
     }
   }
 }
 
-const clientAPI = new RestClient().config(import.meta.env.VITE_DOMAIN_API_BACKEND ?? "");
+const clientAPI = new RestClient(import.meta.env.VITE_DOMAIN_API_BACKEND ?? "");
 export default clientAPI;

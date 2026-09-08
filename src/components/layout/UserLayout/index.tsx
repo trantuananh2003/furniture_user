@@ -13,18 +13,10 @@ interface UseLayoutProps {
 }
 
 const UseLayout: React.FC<UseLayoutProps> = ({ children }) => {
-  // ref của div, nên dùng HTMLDivElement
   const goTop = useRef<HTMLDivElement | null>(null);
-  const navigate = useNavigate(); // hook navigate
-
-  // useSelector với RootState và kiểu dữ liệu user
-  const userData = useSelector<RootState, User | null>((state) => state.users);
 
   useEffect(() => {
     goTop.current?.scrollIntoView({ behavior: "smooth" });
-    if (userData?.user_id.trim() === "") {
-      navigate("/auth");
-    }
   }, []);
 
   return (
