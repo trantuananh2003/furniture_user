@@ -62,19 +62,21 @@ const Homepage: React.FC = () => {
 
       {/* New product */}
       <div className="relative md:w-[80%] w-full md:p-10 p-2 mx-auto">
-        <div className="flex justify-between items-center p-4 md:text-3xl text-xl font-bold">
-          <span>Sản phẩm mới</span>
+        <div className="flex justify-between items-center p-4 md:text-3xl text-xl">
+          <span className="rounded border-l-2 border-black pl-4 font-bold">
+            Sản phẩm mới
+          </span>
           <span
-            className="hover:cursor-pointer text-lg text-black"
+            className="hover:cursor-pointer text-sm text-black hover:text-gray-500"
             onClick={() => navigate("/products")}
           >
-            Xem thêm
+            Xem thêm &gt;
           </span>
         </div>
 
         {/* Grid thay thế Swiper */}
         {dataNewProducts?.length > 0 ? (
-          <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-2 gap-4">
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {dataNewProducts.map((product, index) => (
               <ProductCard key={index} product={product} />
             ))}
@@ -85,7 +87,7 @@ const Homepage: React.FC = () => {
       </div>
 
       {/* Các phần khác vẫn giữ nguyên */}
-      <div className="relative md:w-[80%] w-full md:p-10 p-2 mx-auto">
+      <div className="relative md:w-[80%] md:p-10 w-full p-2 mx-auto">
         <div className="flex justify-center items-center p-4 md:text-3xl text-xl font-bold">
           <span>Gợi ý</span>
         </div>

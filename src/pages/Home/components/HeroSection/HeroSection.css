@@ -1,0 +1,126 @@
+/* =============================================
+   HERO SECTION
+   (Tách riêng CSS từ Tailwind — để test các case
+    trước khi gộp lại. Comment giữ lại class Tailwind
+    gốc để tiện merge sau.)
+============================================= */
+
+/* section: relative h-[500px] w-full overflow-hidden */
+.hero-section {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  overflow: hidden;
+}
+
+/* =========================
+   BACKGROUND IMAGE
+   img: absolute inset-0 h-full w-full object-cover
+========================= */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* =========================
+   OVERLAY
+   div: absolute inset-0 bg-black/35
+========================= */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+/* =========================
+   CONTENT
+   div: relative z-10 flex h-full items-center
+========================= */
+.hero-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* div: mx-auto w-full max-w-7xl px-8 */
+.hero-container {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 80rem; /* max-w-7xl = 1280px */
+  padding: 0 2rem; /* px-8 */
+}
+
+/* div: max-w-xl text-white */
+.hero-text {
+  max-width: 36rem; /* max-w-xl = 576px */
+  color: #ffffff;
+}
+
+/* =========================
+   EYEBROW LABEL
+   p: mb-4 text-sm font-medium uppercase tracking-[0.3em]
+========================= */
+.hero-eyebrow {
+  margin-bottom: 1rem;
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  text-transform: uppercase;
+  letter-spacing: 0.3em; /* tracking-[0.3em] */
+}
+
+/* =========================
+   TITLE
+   h1: text-5xl font-semibold leading-tight md:text-6xl
+========================= */
+.hero-title {
+  font-size: 3rem; /* text-5xl */
+  font-weight: 600; /* font-semibold */
+  line-height: 1.25; /* leading-tight */
+}
+
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 3.75rem; /* md:text-6xl */
+  }
+}
+
+/* =========================
+   DESCRIPTION
+   p: mt-6 max-w-md text-lg leading-relaxed text-white/85
+========================= */
+.hero-description {
+  margin-top: 1.5rem; /* mt-6 */
+  max-width: 28rem; /* max-w-md = 448px */
+  font-size: 1.125rem; /* text-lg */
+  line-height: 1.625; /* leading-relaxed */
+  color: rgba(255, 255, 255, 0.85); /* text-white/85 */
+}
+
+/* =========================
+   BUTTON
+   button: mt-8 bg-white px-7 py-3.5 text-sm font-medium
+           text-black transition-all duration-300
+           hover:bg-black hover:text-white hover:cursor-pointer
+========================= */
+.hero-button {
+  margin-top: 2rem; /* mt-8 */
+  background-color: #ffffff; /* bg-white */
+  padding: 0.875rem 1.75rem; /* py-3.5 px-7 */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: #000000; /* text-black */
+  transition: all 300ms ease; /* transition-all duration-300 */
+}
+
+.hero-button:hover {
+  background-color: #000000; /* hover:bg-black */
+  color: #ffffff; /* hover:text-white */
+  cursor: pointer; /* hover:cursor-pointer */
+}

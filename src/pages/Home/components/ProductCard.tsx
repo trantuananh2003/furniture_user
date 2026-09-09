@@ -12,53 +12,82 @@ function ProductCard({ product }: Props) {
   const navigateProductDetail = (slug: string) => {
     navigate(`/products/${slug}`);
   };
-
   return (
-    //Card product
     <div
-      className="relative md:m-1 box-border min-w-[11.3em] border border-[#e4e2e2] font-['Inter',sans-serif] hover:opacity-75 hover:cursor-pointer hover:shadow-[0_0_10px_rgba(0,0,0,0.5)] lg:h-[22rem]"
+      className="
+      relative
+      border border-gray-200
+      cursor-pointer
+      hover:opacity-75 hover:shadow-lg
+      md:m-1
+    "
       onClick={() => navigateProductDetail(product.slug)}
     >
-      <div className="relative h-48 overflow-hidden group">
+      {/* Product image */}
+      <div className="group relative h-40 overflow-hidden sm:h-48">
         <img
           src={product.thumbnailUrl ?? "https://placehold.co/600x400"}
           alt={product.name}
-          className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-in-out 
-               opacity-100 group-hover:scale-110"
+          className="
+          h-full w-full object-cover
+          transition-transform duration-500
+          group-hover:scale-110
+        "
         />
       </div>
 
-      <div className="flex flex-col items-start mx-2 mb-2 text-[0.8rem] md:text-sm">
-        <h3 className="mt-2 w-full min-h-[3.4rem] overflow-hidden text-ellipsis whitespace-nowrap md:text-[1.1rem]">
+      {/* Product information */}
+      <div className="mx-2 mb-2 text-sm">
+        <h3
+          className="
+          mt-2 w-full
+          line-clamp-2
+          min-h-10
+          font-semibold
+          text-center
+          md:text-left sm:text-lg
+        "
+        >
           {product.name}
         </h3>
 
-        <div className="flex flex-wrap items-center gap-1 w-full">
-          <span className="text-[#2b8a3e] text-xl">
-            {product.salePrice.toLocaleString()}đ
+        {/* Price */}
+        <div className="flex justify-center items-center md:justify-start gap-1.5">
+          <span className="text-lg font-bold text-green-700 sm:text-xl">
+            {product.salePrice.toLocaleString("vi-VN")}đ
           </span>
 
-          {product.price !== 0 && (
-            <span className="line-through text-gray-400 text-sm">
-              {product.price.toLocaleString("vn")}đ
+          {product.price > product.salePrice && (
+            <span className="hidden md:block text-xs text-gray-400 line-through sm:text-sm">
+              {product.price.toLocaleString("vi-VN")}đ
             </span>
           )}
         </div>
 
-        <div className="text-gray-500 text-sm">
+        {/* Sold */}
+        <p className="text-sm text-center md:text-left text-gray-500">
           Đã bán: {product.totalSoldQuantity}
-        </div>
+        </p>
       </div>
 
-      <div className="absolute top-1 left-1 flex flex-col gap-1">
+      {/* Badges */}
+      <div className="absolute left-1 top-1 flex flex-col gap-1">
         {product.salePrice !== product.price && (
-          <div className="flex justify-center items-center text-[16px] w-10 h-10 rounded-full text-white bg-[#c92a2a]">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-600 text-sm font-semibold text-white sm:h-10 sm:w-10">
             {((1 - product.salePrice / product.price) * 100).toFixed(0)}%
           </div>
         )}
+
         {product.isHaveModel3D && (
-          <button className="w-max px-3 py-1 h-full font-semibold rounded-sm bg-gray-300 flex justify-center items-center">
-            <TbCube className="size-6" />
+          <button
+            type="button"
+            className="
+            flex h-9 w-9 items-center justify-center
+            rounded-sm bg-gray-300
+            sm:h-10 sm:w-10
+          "
+          >
+            <TbCube className="size-5 sm:size-6" />
           </button>
         )}
       </div>
