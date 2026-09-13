@@ -1,5 +1,5 @@
-import React, { memo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { memo, useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type User from "../../../../model/User";
 import Cart from "../Cart";
@@ -7,21 +7,60 @@ import type { RootState } from "../../../../redux/store";
 import { setUser, emptyUserState } from "../../../../redux/features/userSlice";
 import Navigation from "../Navigation";
 import logo from "~/assets/leaf_logo.svg";
-import { FaSearch, FaUser, FaUserCircle } from "react-icons/fa";
+import {
+  FaAddressBook,
+  FaAngleDown,
+  FaReceipt,
+  FaSearch,
+  FaSignOutAlt,
+  FaUser,
+  FaUserCircle,
+} from "react-icons/fa";
 
 const Header = () => {
-  const [stringSearch, setStringSearch] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
 
   const userData: User = useSelector((state: RootState) => state.users);
 
-  const triggerSearch = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const [stringSearch, setStringSearch] = useState<string>(
+    searchParams.get("stringSearch") ?? "",
+  );
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
+
+  // Đóng menu người dùng khi click bên ngoài / nhấ Escape
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const triggerSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    navigate({
-      pathname: "/collections",
-      search: `?stringSearch=${stringSearch.toString()}`,
-    });
+    const trimmed = stringSearch.trim();
+    navigate(
+      trimmed
+        ? `/products?stringSearch=${encodeURIComponent(trimmed)}`
+        : "/products",
+    );
   };
 
   const triggerLogout = () => {
@@ -31,79 +70,126 @@ const Header = () => {
     window.location.reload();
   };
 
+  const closeUserMenu = () => setIsUserMenuOpen(false);
+
+  const userMenuVisibility = isUserMenuOpen
+    ? "visible opacity-100 pointer-events-auto"
+    : "invisible opacity-0 pointer-events-none";
+
   return (
-    <header className="relative h-max p-3 bg-lime-800 max-w-full">
-      <div className="container mx-auto px-1">
-        <div className="flex items-center gap-2 justify-around p-4">
-          <Link to="/">
-            <img
-              src={logo}
-              alt="Logo"
-              className="size-[3em] lg:size-[4em] lg:mx-[1em]"
-            />
+    <header className="bg-lime-800 text-white shadow-sm">
+      <div className="mx-auto w-full max-w-[1600px] px-4">
+        {/* ── Top bar: logo | search | actions ── */}
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 md:flex-nowrap">
+          {/* Logo */}
+          <Link to="/" aria-label="Trang gia" className="order-1 shrink-0">
+            <img src={logo} alt="Bànnoithàt" className="h-11 w-auto lg:h-14" />
           </Link>
 
-          {/* Search Bar */}
-          <div className="flex-1 w-max flex flex-row justify-center items-center gap-1">
-            <input
-              type="text"
-              value={stringSearch}
-              onChange={(e) => setStringSearch(e.target.value)}
-              placeholder="Tìm kiếm sản phẩm..."
-              className="relative w-full text-white sm:w-[20rem] lg:w-[40rem] p-2 pr-10 border-2 rounded-lg focus:outline-none focus:border-white hover:shadow-[0_0_15px_4px_rgba(0,150,255,0.7)]"
-            ></input>
-            <button
-              className="cursor-pointer bg-gray-800 p-2 rounded"
-              onClick={triggerSearch}
-            >
-              <FaSearch className="w-6 h-6 text-white" />
-            </button>
-          </div>
+          {/* Tìm kié m */}
+          <form
+            role="search"
+            onSubmit={triggerSearch}
+            className="order-3 w-full min-w-0 md:order-2 md:flex-1"
+          >
+            <div className="relative w-full">
+              <input
+                type="text"
+                value={stringSearch}
+                onChange={(e) => setStringSearch(e.target.value)}
+                placeholder="Tìm kiếm sản phẩm"
+                aria-label="Tìm kiếm sản phẩm"
+                className="w-full rounded-full border border-white/40 bg-white py-2 pl-4 pr-11 text-sm text-gray-900 placeholder:text-gray-400 transition-shadow focus:border-lime-300 focus:outline-none focus:ring-2 focus:ring-lime-300/60"
+              />
+              <button
+                type="submit"
+                aria-label="Bắt tìm kié"
+                className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-full border-l border-white/40 text-gray-500 transition-colors hover:bg-lime-100 hover:text-lime-700"
+              >
+                <FaSearch className="size-4" />
+              </button>
+            </div>
+          </form>
 
-          {/* User*/}
-          <div className="flex justify-center items-center">
+          {/* Hành: giỏ hàng + người dùng */}
+          <div className="order-2 flex shrink-0 items-center gap-2 md:order-3 md:gap-3">
             {userData.user_id ? (
-              <div className="flex sm:flex flex-row gap-4">
+              <>
                 <Cart />
-                {/* Icon người dùng */}
-                <div className="cursor-pointer relative group rounded-full hover:bg-white/10 transition-colors duration-200">
-                  <FaUserCircle className="size-8 text-green-100 group-hover:text-white transition-colors duration-200" />
-                  <div className="absolute right-0 mt-0.5 w-max min-w-40 bg-white border rounded-lg shadow-lg cart-dropdown whitespace-nowrap">
-                    <Link
-                      to="/information"
-                      className="p-2 hover:cursor-pointer block"
-                    >
-                      Thông tin tài khoản
-                    </Link>
-                    <Link
-                      to="/orders"
-                      className="p-2 hover:cursor-pointer block"
-                    >
-                      Đơn hàng
-                    </Link>
-                    <button
-                      className="p-2 hover:cursor-pointer"
-                      onClick={triggerLogout}
-                    >
-                      Đăng xuất
-                    </button>
+
+                <div ref={userMenuRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsUserMenuOpen((open) => !open)}
+                    aria-expanded={isUserMenuOpen}
+                    aria-haspopup="true"
+                    aria-label="Meni người dùng"
+                    className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-2 transition-colors hover:bg-white/20"
+                  >
+                    <FaUserCircle className="size-5" />
+                    <FaAngleDown
+                      className={`size-3.5 transition-transform ${isUserMenuOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+
+                  <div
+                    aria-hidden={!isUserMenuOpen}
+                    className={`absolute right-0 top-full z-40 mt-2 w-52 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-gray-200 transition-all duration-150 ${userMenuVisibility}`}
+                  >
+                    <div className="border-b border-gray-100 px-3 py-2">
+                      <p className="truncate text-sm font-semibold text-gray-800">
+                        {userData.fullName || userData.email}
+                      </p>
+                      {userData.fullName && (
+                        <p className="truncate text-xs text-gray-500">
+                          {userData.email}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="p-1.5">
+                      <Link
+                        to="/information"
+                        onClick={closeUserMenu}
+                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                      >
+                        <FaAddressBook className="size-4 text-gray-400" />
+                        Thông tin tài khoản
+                      </Link>
+                      <Link
+                        to="/orders"
+                        onClick={closeUserMenu}
+                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                      >
+                        <FaReceipt className="size-4 text-gray-400" />
+                        Đơn hàng
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={triggerLogout}
+                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
+                      >
+                        <FaSignOutAlt className="size-4" />
+                        Đăng xuất
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </>
             ) : (
-              <div className="text-sm">
-                <Link
-                  to="/auth"
-                  className="flex  bg-slate-200 px-2 py-1 rounded-full items-center text-black hover:text-gray-500"
-                >
-                  <FaUser className="size-5" />
-                  <span className="hidden lg:inline">Đăng nhập</span>
-                </Link>
-              </div>
+              <Link
+                to="/auth"
+                className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-medium transition-colors hover:bg-white/20"
+              >
+                <FaUser className="size-4" />
+                <span className="hidden sm:inline">Đăng nhập</span>
+              </Link>
             )}
           </div>
         </div>
-        <div className="navigate-section-header">
+
+        {/* ── Navigation bar ── */}
+        <div className="m-2 md:m-4">
           <Navigation />
         </div>
       </div>
